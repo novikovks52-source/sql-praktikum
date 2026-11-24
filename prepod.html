@@ -399,7 +399,6 @@ const SQC = (function () {
     cur = D.courses.find((c) => c.id === id); $$("#nav .i").forEach((i) => i.classList.toggle("cur", i.dataset.c === id));
     const c = cur;
     let h = `<div class="card"><h2>${esc(c.title)}</h2><div class="muted">${esc(D.disc)} · ${c.hours || ""} ч · шагов: ${c.steps.length}</div>
-      ${c.id === "zachet" ? `<div style="margin-top:8px"><b>Код доступа к зачёту</b> <span class="badge ok" style="font-size:1em">${esc(D.passwords.zachet || "Код не указан")}</span></div>` : ""}
       <div style="margin-top:4px"><b>Тема занятия:</b> ${esc(c.topic || c.title)}</div>
       ${c.goals ? "<b>Цели:</b><ul class=c>" + c.goals.map((x) => `<li>${esc(x)}</li>`).join("") + "</ul>" : ""}${c.objectives ? "<b>Задачи:</b><ul class=c>" + c.objectives.map((x) => `<li>${esc(x)}</li>`).join("") + "</ul>" : ""}
       <div class="row" style="margin-top:8px;flex:none"><button class="primary" id="openApp" style="flex:none">Открыть как у студентов</button><button id="dlAll" style="flex:none">Скачать все решения (.sql)</button><button id="cpAll" style="flex:none">Копировать все решения</button><span class="muted" style="flex:2;align-self:center">Ожидаемое время: занятие ${((c.hours || 2) * 45)} мин; самостоятельная часть обычно не меньше ${(c.hours || 2) * 10} мин.</span></div></div>`;
@@ -459,7 +458,7 @@ const SQC = (function () {
 
   /* ---------- коды ---------- */
   function buildCodes() {
-    $("#codesView").innerHTML = `<div class="card" id="zCard"><h2>Зачёт: доступ студентов</h2><div id="zStat" class="muted">Проверяю состояние...</div><div class="row" style="margin-top:8px;flex:none"><button id="zBtn" style="flex:none" disabled>...</button></div><div class="muted" style="margin-top:6px">Студенты узнают об изменении в течение минуты (если у них идёт зачёт) или при открытии списка практик. Если у студента нет связи с сервером, у него остаётся последнее известное состояние.</div><div style="margin-top:8px"><b>Код доступа к зачёту</b> <span class="badge ok" style="font-size:1em">${esc(D.passwords.zachet || "Код не указан")}</span></div></div>
+    $("#codesView").innerHTML = `<div class="card" id="zCard"><h2>Зачёт: доступ студентов</h2><div id="zStat" class="muted">Проверяю состояние...</div><div class="row" style="margin-top:8px;flex:none"><button id="zBtn" style="flex:none" disabled>...</button></div><div class="muted" style="margin-top:6px">Студенты узнают об изменении в течение минуты (если у них идёт зачёт) или при открытии списка практик. Если у студента нет связи с сервером, у него остаётся последнее известное состояние.</div></div>
       <div class="card"><h2>Восстановление доступа к профилю</h2><div class="muted">Если студент забыл пароль или ошибся в ФИО или группе, он открывает «Забыл пароль» или нажимает на свой профиль. Введите пароль преподавателя, чтобы исправить данные и задать новый пароль студенту. Тем же паролем можно открыть зачёт. Студентам этот пароль сообщать нельзя.</div></div>`;
     zInit();
   }
