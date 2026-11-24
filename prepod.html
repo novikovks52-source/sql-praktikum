@@ -122,7 +122,7 @@ dialog#stuDlg{max-width:min(1240px,97vw);width:97vw;max-height:94vh;padding:0;bo
       <button class="tab" data-tab="sol">Решения</button>
       <button class="tab" data-tab="app">Как у студентов</button>
       <span class="tsep"></span>
-      <button class="tab sec" data-tab="codes">Коды доступа</button>
+      <button class="tab sec" data-tab="codes">Доступ к зачёту</button>
       <button class="tab sec" data-tab="check">Проверка файлов</button>
     </div>
   </header>
@@ -399,7 +399,6 @@ const SQC = (function () {
     cur = D.courses.find((c) => c.id === id); $$("#nav .i").forEach((i) => i.classList.toggle("cur", i.dataset.c === id));
     const c = cur;
     let h = `<div class="card"><h2>${esc(c.title)}</h2><div class="muted">${esc(D.disc)} · ${c.hours || ""} ч · шагов: ${c.steps.length}</div>
-      <div style="margin-top:8px"><b>Пароль для студентов:</b> ${D.passwords[c.id] ? `<span class="badge ok" style="font-size:1em">${esc(D.passwords[c.id])}</span>` : (c.kind === "lecture" ? "не нужен (лекция открыта)" : "не нужен (практика открыта сразу)")}</div>
       <div style="margin-top:4px"><b>Тема занятия:</b> ${esc(c.topic || c.title)}</div>
       ${c.goals ? "<b>Цели:</b><ul class=c>" + c.goals.map((x) => `<li>${esc(x)}</li>`).join("") + "</ul>" : ""}${c.objectives ? "<b>Задачи:</b><ul class=c>" + c.objectives.map((x) => `<li>${esc(x)}</li>`).join("") + "</ul>" : ""}
       <div class="row" style="margin-top:8px;flex:none"><button class="primary" id="openApp" style="flex:none">Открыть как у студентов</button><button id="dlAll" style="flex:none">Скачать все решения (.sql)</button><button id="cpAll" style="flex:none">Копировать все решения</button><span class="muted" style="flex:2;align-self:center">Ожидаемое время: занятие ${((c.hours || 2) * 45)} мин; самостоятельная часть обычно не меньше ${(c.hours || 2) * 10} мин.</span></div></div>`;
@@ -459,13 +458,9 @@ const SQC = (function () {
 
   /* ---------- коды ---------- */
   function buildCodes() {
-    const pr = D.courses.filter((c) => c.kind !== "lecture");
-    $("#codesView").innerHTML = `<div class="card" id="zCard"><h2>Зачёт: доступ студентов</h2><div id="zStat" class="muted">Проверяю состояние...</div><div class="row" style="margin-top:8px;flex:none"><button id="zBtn" style="flex:none" disabled>...</button></div><div class="muted" style="margin-top:6px">Студенты узнают об изменении в течение минуты (если у них идёт зачёт) или при открытии списка практик. Если у студента нет связи с сервером, у него остаётся последнее известное состояние.</div></div><div class="card"><h2>Пароли практик</h2><div class="muted">Один пароль на практику, одинаковый для всех студентов. Назовите пароль группе на занятии, когда пора открыть следующую практику. Практика №1 и все лекции открыты без пароля. Пароли вводятся латинскими буквами и цифрами, регистр не важен.</div>
-      <table class="t" style="margin-top:8px"><tr><th>Практика</th><th>Пароль</th></tr>${pr.map((x) => `<tr><td>${esc(x.num ? "№" + x.num + ". " : "Доп. ")}${esc(x.short || x.title)}</td><td>${D.passwords[x.id] ? `<span class="big" style="font-size:1.3em;letter-spacing:2px">${esc(D.passwords[x.id])}</span>` : '<span class="muted">без пароля</span>'}</td></tr>`).join("")}</table>
-      <div class="row" style="margin-top:8px;flex:none"><button id="pwCsv" style="flex:none">Скачать таблицу (CSV)</button></div></div>
-      <div class="card"><h2>Ваш пароль открывает всё</h2><div class="muted">Пароль, которым вы входите в этот файл, одновременно является паролем преподавателя в файле студентов. Студент сам не может изменить ФИО, группу и пароль: при входе у него всегда спрашивается его собственный пароль. Если студент забыл пароль или ошибся в ФИО или группе, он нажимает «Забыл пароль» (или на свой профиль вверху), вы вводите свой пароль, и открывается редактор профиля: можно исправить ФИО, группу и задать новый пароль. Тем же паролем вы открываете любую практику без пароля практики (поле «Пароль практики или пароль преподавателя»). Студентам этот пароль сообщать нельзя.</div></div>`;
+    $("#codesView").innerHTML = `<div class="card" id="zCard"><h2>Зачёт: доступ студентов</h2><div id="zStat" class="muted">Проверяю состояние...</div><div class="row" style="margin-top:8px;flex:none"><button id="zBtn" style="flex:none" disabled>...</button></div><div class="muted" style="margin-top:6px">Студенты узнают об изменении в течение минуты (если у них идёт зачёт) или при открытии списка практик. Если у студента нет связи с сервером, у него остаётся последнее известное состояние.</div></div>
+      <div class="card"><h2>Восстановление доступа к профилю</h2><div class="muted">Если студент забыл пароль или ошибся в ФИО или группе, он открывает «Забыл пароль» или нажимает на свой профиль. Введите пароль преподавателя, чтобы исправить данные и задать новый пароль студенту. Тем же паролем можно открыть зачёт. Студентам этот пароль сообщать нельзя.</div></div>`;
     zInit();
-    $("#pwCsv").onclick = () => download("paroli_praktik.csv", "\ufeff" + "Практика;Пароль\n" + pr.map((x) => (x.num ? "№" + x.num + ". " : "Доп. ") + (x.short || x.title) + ";" + (D.passwords[x.id] || "")).join("\n"), "text/csv;charset=utf-8");
   }
 
   /* ---------- проверка работ ---------- */
